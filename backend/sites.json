@@ -1,0 +1,16 @@
+{
+  "sites": [
+    {
+      "name": "Amarjit Personal",
+      "url": "https://amarjit.co.in"
+    },
+    {
+      "name": "Wedding Website",
+      "url": "https://wedding.amarjit.co.in"
+    },
+    {
+      "name": "Passbolt",
+      "url": "https://passbolt.amarjit.co.in"
+    }
+  ]
+}

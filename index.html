@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CheckUpSite - Website Monitoring Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1>🔍 CheckUpSite</h1>
+                <p class="subtitle">Real-time Website Monitoring Dashboard</p>
+            </div>
+        </header>
+
+        <!-- Control Panel -->
+        <section class="control-panel">
+            <button id="checkBtn" class="btn btn-primary">
+                <span class="btn-text">Check Now</span>
+                <span class="btn-spinner" style="display:none;">⏳</span>
+            </button>
+            <div class="last-updated">
+                Last checked: <span id="lastUpdated">Never</span>
+            </div>
+        </section>
+
+        <!-- Summary Stats -->
+        <section class="summary">
+            <div class="stat-card">
+                <div class="stat-number" id="totalSites">0</div>
+                <div class="stat-label">Total Sites</div>
+            </div>
+            <div class="stat-card stat-up">
+                <div class="stat-number" id="upCount">0</div>
+                <div class="stat-label">Sites UP</div>
+            </div>
+            <div class="stat-card stat-down">
+                <div class="stat-number" id="downCount">0</div>
+                <div class="stat-label">Sites DOWN</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="uptime">0%</div>
+                <div class="stat-label">Uptime</div>
+            </div>
+        </section>
+
+        <!-- Sites List -->
+        <section class="sites-container">
+            <div id="sitesList" class="sites-list">
+                <div class="loading-message">
+                    <p>Click "Check Now" to start monitoring...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Error Message -->
+        <div id="errorMessage" class="error-message" style="display:none;"></div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>CheckUpSite v1.0 | Monitoring your websites 24/7</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
