@@ -125,9 +125,9 @@ function updateDashboard(data) {
     statDown.textContent = downCount;
     statUptimeEl.textContent = `${uptime}%`;
     
-    // Update last checked time
-    const lastChecked = new Date(data.checkedAt);
-    lastUpdatedEl.textContent = `Last updated: ${lastChecked.toLocaleString()}`;
+    // Update last checked time (use data.timestamp from API response)
+    const lastCheckedTime = formatTime(data.timestamp);
+    lastUpdatedEl.textContent = `Last checked: ${lastCheckedTime}`;
     
     // Render site cards
     sitesList.innerHTML = '';
@@ -180,6 +180,16 @@ function createSiteCard(site) {
     `;
     
     return card;
+}
+
+/**
+ * Format timestamp to local date/time string safely
+ */
+function formatTime(dateString) {
+    if (!dateString) return 'Never';
+    const d = new Date(dateString);
+    if (isNaN(d.getTime())) return 'Never';
+    return d.toLocaleString();
 }
 
 /**
