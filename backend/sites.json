@@ -11,6 +11,14 @@
     {
       "name": "Passbolt",
       "url": "https://passbolt.amarjit.co.in"
+    },
+    {
+      "name": "AWS",
+      "url": "https://aws.amazon.com"
+    },
+    {
+      "name": "Oracle",
+      "url": "https://www.oracle.com"
     }
   ]
 }
