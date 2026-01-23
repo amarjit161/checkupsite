@@ -29,11 +29,14 @@ document.addEventListener('DOMContentLoaded', function() {
     if (savedData) {
         updateDashboard(savedData);
     } else {
-        sitesList.innerHTML = '<div class="loading-message">No data yet. Click "Check Now" to start monitoring.</div>';
+        sitesList.innerHTML = '<div class="loading-message">📡 Checking sites...</div>';
     }
     
     // Check if backend is running
     pingBackend();
+    
+    // Automatically check sites on page load
+    checkSites();
 });
 
 // Event listeners
