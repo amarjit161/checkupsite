@@ -397,15 +397,28 @@ app.get('/health', (req, res) => {
 /**
  * Welcome message endpoint
  */
+/**
+ * Health Check Endpoint: GET /health
+ * Lightweight endpoint for monitoring backend availability
+ * Used by frontend to detect cold starts and by keep-alive services
+ */
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 app.get('/', (req, res) => {
   res.json({
     message: 'CheckUpSite Backend API',
     version: '1.0.0',
     endpoints: {
+      health: 'GET /health - Health check (lightweight, use for keep-alive)',
       check: 'GET /api/check - Check all configured websites (manual)',
       status: 'GET /api/status - Get last known status of all sites',
-      'site-status': 'GET /api/status/:siteName - Get last known status of specific site',
-      health: 'GET /health - Health check'
+      'site-status': 'GET /api/status/:siteName - Get last known status of specific site'
     }
   });
 });

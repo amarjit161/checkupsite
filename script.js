@@ -48,21 +48,49 @@ document.addEventListener('keydown', function(event) {
 
 /**
  * Ping the backend to check if it's running
+ * Includes retry logic for cold-start detection (Render FREE tier)
+ * @param {number} retryCount - Current retry attempt
+ * @param {number} maxRetries - Maximum retry attempts
  */
-async function pingBackend() {
-    try {
-        const response = await fetch(API_BASE_URL);
-        if (response.ok) {
-            console.log('Backend is running ✓');
-        }
-    } catch (error) {
-        console.warn('Backend might not be responding yet:', error.message);
-        showError('⚠️ Backend not responding. It may be starting up. Try again in a moment.');
+async function pingBackend(retryCount = 0, maxRetries = 3) {
+  const RETRY_DELAY = 2000; // 2 seconds between retries
+  const TIMEOUT = 10000; // 10 second timeout per attempt
+  
+  try {
+    // Use /health endpoint (lightweight, fast response)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT);
+    
+    const response = await fetch(`${API_BASE_URL}/health`, {
+      signal: controller.signal
+    });
+    clearTimeout(timeoutId);
+    
+    if (response.ok) {
+      console.log('✓ Backend is running');
+      clearError(); // Clear any previous errors
+      return;
     }
+  } catch (error) {
+    // Cold start detected or timeout
+    if (retryCount < maxRetries) {
+      console.warn(`⚠️ Backend warming up... (attempt ${retryCount + 1}/${maxRetries})`);
+      showError(`⏳ Backend is warming up (cold start). Retrying in 2 seconds... (${retryCount + 1}/${maxRetries})`);
+      
+      // Wait and retry
+      setTimeout(() => pingBackend(retryCount + 1, maxRetries), RETRY_DELAY);
+      return;
+    } else {
+      // All retries exhausted
+      console.warn('Backend not responding after retries:', error.message);
+      showError('⚠️ Backend not responding. It may be overloaded. Try clicking "Check Now" manually.');
+    }
+  }
 }
 
 /**
  * Fetch site status from backend
+ * Includes timeout handling for cold-start scenarios
  */
 async function checkSites() {
     if (isChecking) return;
@@ -73,7 +101,14 @@ async function checkSites() {
     clearError();
     
     try {
-        const response = await fetch(`${API_BASE_URL}/api/check`);
+        // Add timeout for backend request (handle Render cold starts)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 120000); // 120 second timeout for full check
+        
+        const response = await fetch(`${API_BASE_URL}/api/check`, {
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
         
         if (!response.ok) {
             throw new Error(`Backend returned ${response.status}: ${response.statusText}`);
@@ -96,7 +131,13 @@ async function checkSites() {
         
     } catch (error) {
         console.error('Error checking sites:', error);
-        showError(`Error: ${error.message}. Make sure the backend is running at ${API_BASE_URL}`);
+        
+        // Better error handling for timeout vs other errors
+        if (error.name === 'AbortError') {
+            showError(`Request timeout (2 minutes). Backend may be experiencing issues. Please try again.`);
+        } else {
+            showError(`Error: ${error.message}. Make sure the backend is running at ${API_BASE_URL}`);
+        }
     } finally {
         isChecking = false;
         checkNowBtn.disabled = false;
